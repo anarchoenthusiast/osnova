@@ -8,25 +8,25 @@ import {
   BuilderContent,
 } from "@builder.io/react";
 
-// Инициализация вашего API ключа Builder
+// Инициализация API-ключа Builder
 builder.init("c763765c596a4967820eae055a836967");
 
 export default function CatchAllRoute() {
   const isPreviewingInBuilder = useIsPreviewing();
   const [notFound, setNotFound] = useState(false);
-  const [content, setContent] = useState<BuilderContent | null>(null);
+  const [content, setContent] = useState<BuilderContent | undefined>(undefined);
 
   useEffect(() => {
     async function fetchContent() {
       if (typeof window !== "undefined") {
-        // Проверяем наличие window
+        // Проверяем наличие window для предотвращения ошибок на сервере
         const content = await builder
           .get("page", {
             url: window.location.pathname,
           })
           .promise();
 
-        setContent(content);
+        setContent(content || undefined); // Присваиваем undefined, если content = null
         setNotFound(!content);
 
         if (content?.data.title) {
@@ -38,7 +38,7 @@ export default function CatchAllRoute() {
   }, []); // Убираем `window.location.pathname` из зависимостей
 
   if (notFound && !isPreviewingInBuilder) {
-    return <div>Страница не найдена</div>;
+    return <div>Страница не найдена</div>; // Обработка ошибки отсутствия страницы
   }
 
   return (
@@ -46,7 +46,7 @@ export default function CatchAllRoute() {
       {content ? (
         <BuilderComponent model="page" content={content} />
       ) : (
-        <div>Загрузка...</div> // Заглушка для отображения загрузки
+        <div>Загрузка...</div> // Индикатор загрузки
       )}
     </>
   );

@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BuilderComponent, builder, useIsPreviewing } from "@builder.io/react";
+import {
+  BuilderComponent,
+  builder,
+  useIsPreviewing,
+  BuilderContent,
+} from "@builder.io/react";
 
 // Инициализация вашего API ключа Builder
 builder.init("c763765c596a4967820eae055a836967");
@@ -9,7 +14,7 @@ builder.init("c763765c596a4967820eae055a836967");
 export default function CatchAllRoute() {
   const isPreviewingInBuilder = useIsPreviewing();
   const [notFound, setNotFound] = useState(false);
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState<BuilderContent | null>(null);
 
   useEffect(() => {
     async function fetchContent() {
@@ -38,7 +43,11 @@ export default function CatchAllRoute() {
 
   return (
     <>
-      <BuilderComponent model="page" content={content} />
+      {content ? (
+        <BuilderComponent model="page" content={content} />
+      ) : (
+        <div>Загрузка...</div> // Заглушка для отображения загрузки
+      )}
     </>
   );
 }
